@@ -37,19 +37,19 @@ namespace Gerenciador_Arquivos
                             switch (opc1)
                             {
                                 case 1:
-                                    Console.WriteLine("Opc1");
+                                    Arquivos.ListarArquivos(Directory.GetCurrentDirectory());
                                     break;
                                 case 2:
-                                    Console.WriteLine("Opc2");
+                                    Arquivos.CriarArquivo(Directory.GetCurrentDirectory());
                                     break;
                                 case 3:
-                                    Console.WriteLine("Opc3");
+                                    Arquivos.RenomearArquivos();
                                     break;
                                 case 4:
-                                    Console.WriteLine("Opc4");
+                                    Arquivos.AlterarConteudoArquivo();
                                     break;
                                 case 5:
-                                    Console.WriteLine("Opc5");
+                                    Arquivos.DeletarArquivo();
                                     break;
                                 default:
                                     Console.WriteLine("Opção inválida");
@@ -75,14 +75,14 @@ namespace Gerenciador_Arquivos
                             switch (opc2)
                             {
                                 case 1:
-                                    Console.WriteLine("Opc1");
+                                    Pastas.ListarPastas(Directory.GetCurrentDirectory());
                                     break;
                                 case 2:
-                                    string caminhoAtual = Directory.GetCurrentDirectory(); // Pega o diretório atual
+                                    string caminhoAtual = Directory.GetCurrentDirectory();
                                     Pastas.CriarPasta(caminhoAtual);
                                     break;
                                 case 3:
-                                    Console.WriteLine("Opc3");
+                                    Pastas.RenomearPasta();
                                     break;
                                 case 4:
                                     Console.WriteLine("Opc4");
