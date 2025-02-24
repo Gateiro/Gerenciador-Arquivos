@@ -9,10 +9,10 @@ namespace Gerenciador_Arquivos
 {
     public class Arquivos
     {
-        public static void CriarArquivo(string caminhoAtual)
+        public void CriarArquivo(string caminhoAtual)
         {
             Console.WriteLine($"Diretório atual: {caminhoAtual}");
-            //Verificação para alterar ou não o caminho do atual, caso não seja alterado, o caminho atual será o diretório atual onde está executando o programa.
+            // Verificação para alterar ou não o caminho do atual, caso não seja alterado, o caminho atual será o diretório atual onde está executando o programa.
             Console.WriteLine("Deseja alterar o caminho? (s/n)");
             string resposta = Console.ReadLine();
             if (resposta == "s")
@@ -20,6 +20,7 @@ namespace Gerenciador_Arquivos
                 Console.Write("Digite o novo caminho: ");
                 caminhoAtual = Console.ReadLine();
             }
+            
             Console.Write("Digite o nome do novo arquivo: ");
             string nomeArquivo = Console.ReadLine();
 
@@ -28,14 +29,16 @@ namespace Gerenciador_Arquivos
                 Console.WriteLine("Arquivo já existe");
                 return;
             }
-            // Combina o caminho base com o nome da nova pasta
+            // Combina o caminho base com o nome do novo arquivo
             string caminhoCompleto = Path.Combine(caminhoAtual, nomeArquivo);
 
             try
             {
-                // Cria a pasta
-                File.Create(caminhoCompleto);
-                Console.WriteLine($"Arquivo '{nomeArquivo}' criada com sucesso em: {caminhoCompleto}");
+                // Cria o arquivo
+                using (FileStream fs = File.Create(caminhoCompleto))
+                {
+                    Console.WriteLine($"Arquivo '{nomeArquivo}' criado com sucesso em: {caminhoCompleto}");
+                }
                 // Verificação para adicionar conteúdo ao arquivo
                 Console.WriteLine("Deseja adicionar conteúdo ao arquivo? (s/n)");
                 string respostaConteudo = Console.ReadLine();
@@ -43,9 +46,8 @@ namespace Gerenciador_Arquivos
                 {
                     Console.Write("Digite o conteúdo do arquivo: ");
                     string conteudo = Console.ReadLine();
-                    File.WriteAllText(Path.Combine(caminhoAtual, nomeArquivo), conteudo);
-                    Console.WriteLine($"Arquivo '{nomeArquivo}' criado com sucesso em: {caminhoAtual}");
-                    return;
+                    File.WriteAllText(caminhoCompleto, conteudo);
+                    Console.WriteLine($"Conteúdo adicionado ao arquivo '{nomeArquivo}' com sucesso.");
                 }
             }
             catch (Exception ex)
@@ -54,13 +56,12 @@ namespace Gerenciador_Arquivos
             }
         }
 
-
-        public static void ListarArquivos(string caminho)
+        public void ListarArquivos(string caminho)
         {
             try
             {
                 Console.WriteLine($"Diretório atual: {caminho}");
-                //Verificação para alterar ou não o caminho do atual, caso não seja alterado, o caminho atual será o diretório atual onde está executando o programa.
+                // Verificação para alterar ou não o caminho do atual, caso não seja alterado, o caminho atual será o diretório atual onde está executando o programa.
                 Console.WriteLine("Deseja alterar o caminho? (s/n)");
                 string resposta = Console.ReadLine();
                 if (resposta == "s")
@@ -99,28 +100,30 @@ namespace Gerenciador_Arquivos
                 if (resposta == "s")
                 {
                     Console.Write("Digite o novo caminho: ");
-                    caminho = Console.ReadLine();
+                    caminhoAtual = Console.ReadLine();
                 }
-                else
+                
+                Console.WriteLine("Digite o nome do arquivo que deseja renomear: ");
+                string nomeArquivo = Console.ReadLine();
+                
+                if (!File.Exists(Path.Combine(caminhoAtual, nomeArquivo)))
                 {
-                    Console.WriteLine("Digite o caminho do arquivo que deseja renomear: ");
-                    string caminho = Console.ReadLine();
-                    Console.WriteLine("Digite o novo nome do arquivo: ");
-                    string novoNome = Console.ReadLine();
-
-                    string diretorio = Path.GetDirectoryName(caminho);
-                    string novoCaminho = Path.Combine(diretorio, novoNome);
-
-                    File.Move(caminho, novoCaminho);
-                    Console.WriteLine($"Arquivo renomeado com sucesso para: {novoNome}");
+                    Console.WriteLine("Arquivo não encontrado");
+                    return;
                 }
+                
+                Console.WriteLine("Digite o novo nome do arquivo: ");
+                string novoNome = Console.ReadLine();
+                string caminhoAntigo = Path.Combine(caminhoAtual, nomeArquivo);
+                string novoCaminho = Path.Combine(caminhoAtual, novoNome);
 
+                File.Move(caminhoAntigo, novoCaminho);
+                Console.WriteLine($"Arquivo renomeado com sucesso para: {novoNome}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro ao renomear o arquivo: {ex.Message}");
             }
-            
         }
 
         public void DeletarArquivo()
@@ -134,20 +137,24 @@ namespace Gerenciador_Arquivos
                 if (resposta == "s")
                 {
                     Console.Write("Digite o novo caminho: ");
-                    caminho = Console.ReadLine();
+                    caminhoAtual = Console.ReadLine();
                 }
-                else
+                
+                Console.WriteLine("Digite o nome do arquivo que deseja deletar: ");
+                string nomeArquivo = Console.ReadLine();
+                
+                if (!File.Exists(Path.Combine(caminhoAtual, nomeArquivo)))
                 {
-                    Console.WriteLine("Digite o caminho do arquivo que deseja deletar: ");
-                    string caminho = Console.ReadLine();
-
-                    File.Delete(caminho);
-                    Console.WriteLine("Arquivo deletado com sucesso");
+                    Console.WriteLine("Arquivo não encontrado");
+                    return;
                 }
+                
+                File.Delete(Path.Combine(caminhoAtual, nomeArquivo));
+                Console.WriteLine("Arquivo deletado com sucesso");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao deletar a pasta: {ex.Message}");
+                Console.WriteLine($"Erro ao deletar o arquivo: {ex.Message}");
             }
         }
 
@@ -162,25 +169,29 @@ namespace Gerenciador_Arquivos
                 if (resposta == "s")
                 {
                     Console.Write("Digite o novo caminho: ");
-                    caminho = Console.ReadLine();
+                    caminhoAtual = Console.ReadLine();
                 }
-                else
-                {
-                    Console.WriteLine("Digite o caminho do arquivo que deseja alterar o conteúdo: ");
-                    string caminho = Console.ReadLine();
-                    Console.WriteLine("Digite o novo conteúdo do arquivo: ");
-                    string novoConteudo = Console.ReadLine();
+                
+                Console.WriteLine("Digite o nome do arquivo que deseja alterar o conteúdo: ");
+                string nomeArquivo = Console.ReadLine();
 
-                    File.WriteAllText(caminho, novoConteudo);
-                    Console.WriteLine("Conteúdo do arquivo alterado com sucesso");
+                if (!File.Exists(Path.Combine(caminhoAtual, nomeArquivo)))
+                {
+                    Console.WriteLine("Arquivo não encontrado");
+                    return;
                 }
+                
+                string novoCaminho = Path.Combine(caminhoAtual, nomeArquivo);
+                Console.WriteLine("Digite o novo conteúdo do arquivo: ");
+                string novoConteudo = Console.ReadLine();
+
+                File.WriteAllText(novoCaminho, novoConteudo);
+                Console.WriteLine("Conteúdo do arquivo alterado com sucesso");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro ao alterar o conteúdo do arquivo: {ex.Message}");
             }
-
         }
     }
-
 }

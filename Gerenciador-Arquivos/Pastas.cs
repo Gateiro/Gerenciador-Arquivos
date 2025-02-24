@@ -8,9 +8,9 @@ namespace Gerenciador_Arquivos
 {
     public class Pastas
     {
-        public static void CriarPasta(string caminho)
+        public void CriarPasta(string caminho)
         {
-            caminhoAtual = Directory.GetCurrentDirectory(); // Pega o diretório atual
+            string caminhoAtual = Directory.GetCurrentDirectory(); // Pega o diretório atual
             Console.WriteLine($"Diretório atual: {caminhoAtual}");
             //Verificação para alterar ou não o caminho do atual, caso não seja alterado, o caminho atual será o diretório atual onde está executando o programa.
             Console.WriteLine("Deseja alterar o caminho? (s/n)");
@@ -20,33 +20,32 @@ namespace Gerenciador_Arquivos
                 Console.Write("Digite o novo caminho: ");
                 caminhoAtual = Console.ReadLine();
             }
-            else
+
+            Console.Write("Digite o nome da nova pasta: ");
+            string nomePasta = Console.ReadLine();
+
+            if (Directory.Exists(nomePasta))
             {
-                Console.Write("Digite o nome da nova pasta: ");
-                string nomePasta = Console.ReadLine();
+                Console.WriteLine("Pasta já existe");
+                return;
+            }
+            // Combina o caminho base com o nome da nova pasta
+            string caminhoCompleto = Path.Combine(caminhoAtual, nomePasta);
 
-                if (Directory.Exists(nomePasta))
-                {
-                    Console.WriteLine("Pasta já existe");
-                    return;
-                }
-                // Combina o caminho base com o nome da nova pasta
-                string caminhoCompleto = Path.Combine(caminhoAtual, nomePasta);
-
-                try
-                {
-                    // Cria a pasta
-                    Directory.CreateDirectory(caminhoCompleto);
-                    Console.WriteLine($"Pasta '{nomePasta}' criada com sucesso em: {caminhoCompleto}");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Erro ao criar a pasta: {ex.Message}");
-                }
+            try
+            {
+                // Cria a pasta
+                Directory.CreateDirectory(caminhoCompleto);
+                Console.WriteLine($"Pasta '{nomePasta}' criada com sucesso em: {caminhoCompleto}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao criar a pasta: {ex.Message}");
             }
         }
 
-        public static void ListarPastas(string caminho)
+
+        public void ListarPastas(string caminho)
         {
             try
             {
@@ -89,14 +88,26 @@ namespace Gerenciador_Arquivos
                 if (resposta == "s")
                 {
                     Console.Write("Digite o novo caminho: ");
-                    caminho = Console.ReadLine();
+                    caminhoAtual = Console.ReadLine();
+                    
                 }
+
+                Console.Write("Digite o novo nome para a pasta: ");
+                string nomePasta = Console.ReadLine();
+                string renomear = Path.Combine(caminhoAtual, nomePasta);
+
+                if (Directory.Exists(caminhoAtual))
+                {
+                    Directory.Move(caminhoAtual, renomear);
+                    Console.WriteLine($"Pasta renomeada com sucesso para: {nomePasta}");
+                }
+
                 else
                 {
-
-                    Directory.Move(caminho, novoNome);
-                    Console.WriteLine($"Pasta renomeada com sucesso para: {novoNome}");
+                    Console.WriteLine("Pasta não encontrada");
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -116,13 +127,18 @@ namespace Gerenciador_Arquivos
                 if (resposta == "s")
                 {
                     Console.Write("Digite o novo caminho: ");
-                    caminho = Console.ReadLine();
+                    caminhoAtual = Console.ReadLine();
                 }
+                
+                if (Directory.Exists(caminhoAtual))
+                {
+                    Directory.Delete(caminhoAtual, true);
+                    Console.WriteLine("Pasta deletada com sucesso");
+                }
+
                 else
                 {
-
-                    Directory.Delete(caminho);
-                    Console.WriteLine("Pasta deletada com sucesso");
+                    Console.WriteLine("Pasta não encontrada");
                 }
             }
             catch (Exception ex)
